@@ -1,7 +1,7 @@
 package comtjoon.github.tjoonalarm
 
+import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
@@ -9,7 +9,6 @@ import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
@@ -19,10 +18,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        tjoon_viewPager.adapter=TjoonViewPagerAdapter(supportFragmentManager)
+
+        tjoon_viewPager.adapter = TjoonViewPagerAdapter(supportFragmentManager)
         tabLayout.addTab(tabLayout.newTab().setText("알람"))
         tabLayout.addTab(tabLayout.newTab().setText("타이머"))
-        tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener{
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabReselected(tab: TabLayout.Tab?) {
 
             }
@@ -37,17 +37,23 @@ class MainActivity : AppCompatActivity() {
 
         })
 
-        tjoon_viewPager.addOnPageChangeListener(object:TabLayout.TabLayoutOnPageChangeListener(tabLayout){})
+        tjoon_viewPager.addOnPageChangeListener(object : TabLayout.TabLayoutOnPageChangeListener(tabLayout) {})
 
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+            var intent = Intent(this, SetAlarmActivity::class.java)
+
+            this.startActivity(intent)
+            overridePendingTransition(R.anim.sliding_up,R.anim.stay)
+
+            //startActivity(Intent(this, SetAlarmActivity::class.java))
+            /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show()*/
         }
     }
 
-    class TjoonViewPagerAdapter(fm:FragmentManager):FragmentStatePagerAdapter(fm){
+    class TjoonViewPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
 
-        var fragments=arrayOf(FragmentAlarm(), FragmentTimer())
+        var fragments = arrayOf(FragmentAlarm(), FragmentTimer())
 
         // 화면을 넣어주는 부분
         override fun getItem(position: Int): Fragment {
