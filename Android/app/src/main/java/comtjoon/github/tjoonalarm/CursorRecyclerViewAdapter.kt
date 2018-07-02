@@ -111,4 +111,6 @@ abstract class CursorRecyclerViewAdapter<VH : RecyclerView.ViewHolder>(cursor: C
             //There is no notifyDataSetInvalidated() method in RecyclerView.Adapter
         }
     }
+
+
 }

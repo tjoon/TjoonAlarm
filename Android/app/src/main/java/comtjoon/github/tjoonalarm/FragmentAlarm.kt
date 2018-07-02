@@ -9,10 +9,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import kotlinx.android.synthetic.main.fragment_alarm.*
 
 
-class FragmentAlarm : Fragment() {
+class FragmentAlarm : Fragment(), View.OnLongClickListener, View.OnClickListener {
+    override fun onClick(v: View?) {
+        Toast.makeText(context, "onClick", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onLongClick(v: View?): Boolean {
+        Toast.makeText(context, "onLongClick", Toast.LENGTH_SHORT).show()
+        return true
+    }
+
 
     var mDBHandler: DBHandler_Anko? = null
     var mAdapter: AlarmCursorRecyclerViewAdapter? = null
@@ -20,6 +30,7 @@ class FragmentAlarm : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view = inflater.inflate(R.layout.fragment_alarm, container, false)
         return view
+
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -35,28 +46,38 @@ class FragmentAlarm : Fragment() {
         val newOne: Cursor = mDBHandler!!.getAlarmAllWithCursor()
         if (newOne.count != 0) {
             mAdapter = AlarmCursorRecyclerViewAdapter(newOne)
+            mAdapter!!.setOnItemClickListener(this)
+            mAdapter!!.setOnItemLongClickListener(this)
             recyclerview_alarm.adapter = mAdapter
             recyclerview_alarm.layoutManager = LinearLayoutManager(activity)
         }
 
+
     }
 
     class AlarmCursorRecyclerViewAdapter(cursor: Cursor?) : CursorRecyclerViewAdapter<RecyclerView.ViewHolder>(cursor) {
+
+        private var onItemLongClick: View.OnLongClickListener? = null
+        private var onItemClick: View.OnClickListener? = null
+
         override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, cursor: Cursor?) {
             var alarmItem: AlarmItem = AlarmItem.bindCursor(cursor!!)
             (viewHolder as CursorCustomViewHolder).setAlarmItem(alarmItem, cursor.position)
+
 
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             var view = LayoutInflater.from(parent.context).inflate(R.layout.item_layout_alarm, parent, false)
+            view.setOnClickListener(onItemClick)
+            view.setOnLongClickListener(onItemLongClick)
             return CursorCustomViewHolder(view)
         }
 
         class AlarmItem {
             var time: String = ""
             var ampm: String = ""
-            var sun: Int=0
+            var sun: Int = 0
             var mon: String = ""
             var tue: String = ""
             var wed: String = ""
@@ -111,6 +132,14 @@ class FragmentAlarm : Fragment() {
                 mTime!!.text = item.time
                 mAMPM!!.text = item.ampm
             }
+        }
+
+        fun setOnItemLongClickListener(l: View.OnLongClickListener) {
+            onItemLongClick = l
+        }
+
+        fun setOnItemClickListener(l: View.OnClickListener) {
+            onItemClick = l
         }
 
     }
