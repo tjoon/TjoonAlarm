@@ -11,8 +11,16 @@ import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.fragment_alarm.*
 
 class MainActivity : AppCompatActivity() {
+
+    private var mAdapter: FragmentAlarm.AlarmCursorRecyclerViewAdapter? = null
+    var mDBHandler: DBHandler_Anko = DBHandler_Anko(this)
+
+    companion object {
+        val REQUEST_ADD_ALARM = 1001
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,12 +50,23 @@ class MainActivity : AppCompatActivity() {
         fab.setOnClickListener { view ->
             var intent = Intent(this, SetAlarmActivity::class.java)
 
-            this.startActivity(intent)
-            overridePendingTransition(R.anim.sliding_up,R.anim.stay)
+            this.startActivityForResult(intent, comtjoon.github.tjoonalarm.MainActivity.REQUEST_ADD_ALARM)
+            overridePendingTransition(R.anim.sliding_up, R.anim.stay)
+        }
+    }
 
-            //startActivity(Intent(this, SetAlarmActivity::class.java))
-            /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()*/
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            REQUEST_ADD_ALARM -> {
+                val newOne = mDBHandler.getAlarmAllWithCursor()
+                if (mAdapter == null) {
+                    mAdapter = FragmentAlarm.AlarmCursorRecyclerViewAdapter(newOne)
+                    recyclerview_alarm.adapter=mAdapter
+                }
+                mAdapter?.changeCursor(newOne)
+                mAdapter?.notifyDataSetChanged()
+            }
         }
     }
 

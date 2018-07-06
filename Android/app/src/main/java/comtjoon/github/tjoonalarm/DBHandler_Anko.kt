@@ -11,6 +11,7 @@ import org.jetbrains.anko.db.TEXT
 import org.jetbrains.anko.db.createTable
 
 data class AlarmInfo(
+        val id: String = "_id",
         val time: String = "No Time Set",
         val ampm: String = "Not AMPM Set",
         val sun: Int = 0,
@@ -32,6 +33,7 @@ class DBHandler_Anko(context: Context) : SQLiteOpenHelper(context, DB_Name, null
 
     object AlarmTable {
         val TABLE_NAME = "alarm"
+        val ID = "_id"
         val TIME = "time"
         val AMPM = "ampm"
         val SUN = "sun"
@@ -46,7 +48,8 @@ class DBHandler_Anko(context: Context) : SQLiteOpenHelper(context, DB_Name, null
 
     fun getAlarmAllWithCursor(): Cursor {
         return readableDatabase.query(AlarmTable.TABLE_NAME,
-                arrayOf(AlarmTable.TIME,
+                arrayOf(AlarmTable.ID.toString(),
+                        AlarmTable.TIME,
                         AlarmTable.AMPM,
                         AlarmTable.SUN.toString(),
                         AlarmTable.MON.toString(),
@@ -55,11 +58,12 @@ class DBHandler_Anko(context: Context) : SQLiteOpenHelper(context, DB_Name, null
                         AlarmTable.THU.toString(),
                         AlarmTable.FRI.toString(),
                         AlarmTable.SAT.toString(),
-                        AlarmTable.RUN.toString()), null, null, null, null, null)
+                        AlarmTable.RUN.toString()), null, null, null, null,AlarmTable.AMPM +", "+AlarmTable.ID  )
     }
 
     fun addAlarm(alarm: AlarmInfo) {
         var info = ContentValues()
+        info.put(AlarmTable.ID, alarm.time)
         info.put(AlarmTable.TIME, alarm.time)
         info.put(AlarmTable.AMPM, alarm.ampm)
         info.put(AlarmTable.SUN, alarm.sun)
@@ -76,17 +80,18 @@ class DBHandler_Anko(context: Context) : SQLiteOpenHelper(context, DB_Name, null
         }
     }
 
-    fun deleteAlarm(time: String) {
-        writableDatabase.use{
+    fun deleteAlarm(id: String) {
+        writableDatabase.use {
             writableDatabase.execSQL(
-                    "DELETE FROM ${AlarmTable.TABLE_NAME} WHERE ${AlarmTable.TIME} = ${time}"
+                    "DELETE FROM ${AlarmTable.TABLE_NAME} WHERE ${AlarmTable.TIME} = ${id}"
             )
         }
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
         db!!.createTable(AlarmTable.TABLE_NAME, true,
-                Pair(AlarmTable.TIME, TEXT+ PRIMARY_KEY),
+                Pair(AlarmTable.ID, TEXT + PRIMARY_KEY),
+                Pair(AlarmTable.TIME, TEXT),
                 Pair(AlarmTable.AMPM, TEXT),
                 Pair(AlarmTable.SUN, INTEGER),
                 Pair(AlarmTable.MON, INTEGER),
@@ -96,7 +101,7 @@ class DBHandler_Anko(context: Context) : SQLiteOpenHelper(context, DB_Name, null
                 Pair(AlarmTable.FRI, INTEGER),
                 Pair(AlarmTable.SAT, INTEGER),
                 Pair(AlarmTable.RUN, INTEGER)
-                )
+        )
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {

@@ -8,20 +8,14 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import kotlinx.android.synthetic.main.fragment_alarm.*
-
+import kotlinx.android.synthetic.main.item_layout_alarm.*
+import kotlinx.android.synthetic.main.item_layout_alarm.view.*
 
 class FragmentAlarm : Fragment(), View.OnLongClickListener, View.OnClickListener {
-    override fun onClick(v: View?) {
-        Toast.makeText(context, "onClick", Toast.LENGTH_SHORT).show()
-    }
-
-    override fun onLongClick(v: View?): Boolean {
-        Toast.makeText(context, "onLongClick", Toast.LENGTH_SHORT).show()
-        return true
-    }
 
 
     var mDBHandler: DBHandler_Anko? = null
@@ -30,7 +24,6 @@ class FragmentAlarm : Fragment(), View.OnLongClickListener, View.OnClickListener
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view = inflater.inflate(R.layout.fragment_alarm, container, false)
         return view
-
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -38,22 +31,51 @@ class FragmentAlarm : Fragment(), View.OnLongClickListener, View.OnClickListener
 
         mDBHandler = DBHandler_Anko(activity!!)
 
+        val newOne: Cursor = mDBHandler!!.getAlarmAllWithCursor()
 
-        //recyclerview_alarm.adapter = AlarmRecyclerviewAdapter()
-        //recyclerview_alarm.adapter = AlarmCursorRecyclerViewAdapter(null)
-        //recyclerview_alarm.layoutManager = LinearLayoutManager(activity)
+        mAdapter = AlarmCursorRecyclerViewAdapter(newOne)
+        mAdapter!!.setOnItemClickListener(this)
+        mAdapter!!.setOnItemLongClickListener(this)
+        recyclerview_alarm.adapter = mAdapter
+        recyclerview_alarm.layoutManager = LinearLayoutManager(activity)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mDBHandler = DBHandler_Anko(activity!!)
 
         val newOne: Cursor = mDBHandler!!.getAlarmAllWithCursor()
-        if (newOne.count != 0) {
-            mAdapter = AlarmCursorRecyclerViewAdapter(newOne)
-            mAdapter!!.setOnItemClickListener(this)
-            mAdapter!!.setOnItemLongClickListener(this)
-            recyclerview_alarm.adapter = mAdapter
-            recyclerview_alarm.layoutManager = LinearLayoutManager(activity)
+
+        mAdapter = AlarmCursorRecyclerViewAdapter(newOne)
+        mAdapter!!.setOnItemClickListener(this)
+        mAdapter!!.setOnItemLongClickListener(this)
+        recyclerview_alarm.adapter = mAdapter
+        recyclerview_alarm.layoutManager = LinearLayoutManager(activity)
+    }
+
+
+    override fun onClick(v: View?) {
+        if (v!!.id == del_alarm.id) {
+            deleteAlarm(v)
+            Toast.makeText(context, "delete", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, "onClick", Toast.LENGTH_SHORT).show()
         }
 
 
     }
+
+    override fun onLongClick(v: View?): Boolean {
+        Toast.makeText(context, "onLongClick", Toast.LENGTH_SHORT).show()
+        return true
+    }
+
+    fun deleteAlarm(view: View) {
+        mDBHandler!!.deleteAlarm(view.tag as String)
+        val newOne = mDBHandler!!.getAlarmAllWithCursor()
+        mAdapter?.changeCursor(newOne)
+    }
+
 
     class AlarmCursorRecyclerViewAdapter(cursor: Cursor?) : CursorRecyclerViewAdapter<RecyclerView.ViewHolder>(cursor) {
 
@@ -63,16 +85,21 @@ class FragmentAlarm : Fragment(), View.OnLongClickListener, View.OnClickListener
         override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, cursor: Cursor?) {
             var alarmItem: AlarmItem = AlarmItem.bindCursor(cursor!!)
             (viewHolder as CursorCustomViewHolder).setAlarmItem(alarmItem, cursor.position)
-
+            viewHolder.mDelAlarm!!.setOnClickListener(onItemClick)
+            viewHolder.mDelAlarm!!.tag = cursor.getString(0)
 
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             var view = LayoutInflater.from(parent.context).inflate(R.layout.item_layout_alarm, parent, false)
+            var holder = CursorCustomViewHolder(view.findViewById(R.id.del_alarm))
             view.setOnClickListener(onItemClick)
             view.setOnLongClickListener(onItemLongClick)
+            view.checkBox.visibility = View.GONE
+            view.tag = holder
             return CursorCustomViewHolder(view)
         }
+
 
         class AlarmItem {
             var time: String = ""
@@ -90,22 +117,23 @@ class FragmentAlarm : Fragment(), View.OnLongClickListener, View.OnClickListener
 
                 fun bindCursor(cursor: Cursor): AlarmItem {
                     val alarmItem = AlarmItem()
-                    alarmItem.time = cursor.getString(0)
-                    alarmItem.ampm = cursor.getString(1)
-                    alarmItem.sun = cursor.getInt(2)
-                    alarmItem.mon = cursor.getString(3)
-                    alarmItem.tue = cursor.getString(4)
-                    alarmItem.wed = cursor.getString(5)
-                    alarmItem.thu = cursor.getString(6)
-                    alarmItem.fri = cursor.getString(7)
-                    alarmItem.sat = cursor.getString(8)
-                    alarmItem.run = cursor.getString(9)
+                    alarmItem.time = cursor.getString(1)
+                    alarmItem.ampm = cursor.getString(2)
+                    alarmItem.sun = cursor.getInt(3)
+                    alarmItem.mon = cursor.getString(4)
+                    alarmItem.tue = cursor.getString(5)
+                    alarmItem.wed = cursor.getString(6)
+                    alarmItem.thu = cursor.getString(7)
+                    alarmItem.fri = cursor.getString(8)
+                    alarmItem.sat = cursor.getString(9)
+                    alarmItem.run = cursor.getString(10)
                     return alarmItem
                 }
             }
         }
 
         class CursorCustomViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+
             var mTime: TextView? = null
             var mAMPM: TextView? = null
             var mSun: TextView? = null
@@ -115,6 +143,7 @@ class FragmentAlarm : Fragment(), View.OnLongClickListener, View.OnClickListener
             var mThu: TextView? = null
             var mFri: TextView? = null
             var mSat: TextView? = null
+            var mDelAlarm: ImageButton? = null
 
             init {
                 mTime = view.findViewById(R.id.tv_time)
@@ -126,6 +155,8 @@ class FragmentAlarm : Fragment(), View.OnLongClickListener, View.OnClickListener
                 mThu = view.findViewById(R.id.tv_thu)
                 mFri = view.findViewById(R.id.tv_fri)
                 mSat = view.findViewById(R.id.tv_sat)
+                mDelAlarm = view.findViewById(R.id.del_alarm)
+
             }
 
             fun setAlarmItem(item: AlarmItem, position: Int) {

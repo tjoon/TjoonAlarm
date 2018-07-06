@@ -13,7 +13,7 @@ class SetAlarmActivity : AppCompatActivity(), View.OnClickListener {
 
     val mDBHandler = DBHandler_Anko(this)
 
-    var AMPM: String = ""
+    var AMPM: Int = 0
     var SUN: Int = 0
     var MON: Int = 0
     var TUE: Int = 0
@@ -114,6 +114,7 @@ class SetAlarmActivity : AppCompatActivity(), View.OnClickListener {
                     tv.setTextColor(Color.parseColor("#FF4081"))
                     SAT = 1
                 }
+
         }
 
     }
@@ -127,15 +128,17 @@ class SetAlarmActivity : AppCompatActivity(), View.OnClickListener {
         }
         if (hour!! >= 12) {
             Toast.makeText(this, "ampm오후", Toast.LENGTH_SHORT).show()
-            AMPM = "오후"
+            AMPM = 2
+            hour = hour!! - 12
         } else {
             Toast.makeText(this, "ampm오전", Toast.LENGTH_SHORT).show()
-            AMPM = "오전"
+            AMPM = 1
         }
 
         val alarm: AlarmInfo = AlarmInfo(
-                hour.toString() + ":" + min.toString(),
-                AMPM,
+                hour.toString() + min.toString(),
+                hour.toString() + " : " + min.toString(),
+                AMPM.toString(),
                 SUN,
                 MON,
                 TUE,

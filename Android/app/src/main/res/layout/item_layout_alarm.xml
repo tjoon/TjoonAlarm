@@ -53,63 +53,86 @@
         app:layout_constraintStart_toStartOf="@+id/textView1"
         app:layout_constraintTop_toBottomOf="@+id/textView1" />-->
 
+
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"/>
+
     <TextView
         android:id="@+id/tv_ampm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="ampm"
-        android:padding="10dp" />
+        android:padding="10dp"
+        android:layout_weight="1"/>
 
     <TextView
         android:id="@+id/tv_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="time"
-        android:padding="10dp"/>
+        android:padding="10dp"
+        android:layout_weight="1"/>
 
     <TextView
         android:id="@+id/tv_sun"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="sun"
-        android:padding="5dp"/>
+        android:padding="5dp"
+        android:layout_weight="1"/>
     <TextView
         android:id="@+id/tv_mon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="mon"
-        android:padding="5dp"/>
+        android:padding="5dp"
+        android:layout_weight="1"/>
     <TextView
         android:id="@+id/tv_tue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="tue"
-        android:padding="5dp"/>
+        android:padding="5dp"
+        android:layout_weight="1"/>
     <TextView
         android:id="@+id/tv_wed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="wed"
-        android:padding="5dp"/>
+        android:padding="5dp"
+        android:layout_weight="1"/>
     <TextView
         android:id="@+id/tv_thu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="thu"
-        android:padding="5dp"/>
+        android:padding="5dp"
+        android:layout_weight="1"/>
     <TextView
         android:id="@+id/tv_fri"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="fri"
-        android:padding="5dp"/>
+        android:padding="5dp"
+        android:layout_weight="1"/>
     <TextView
         android:id="@+id/tv_sat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="sat"
-        android:padding="5dp"/>
+        android:padding="5dp"
+        android:layout_weight="1"/>
     <Switch
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_weight="1"/>
+    <ImageButton
+        android:id="@+id/del_alarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:drawable/ic_delete"
+        android:layout_weight="1" />
 </LinearLayout>
